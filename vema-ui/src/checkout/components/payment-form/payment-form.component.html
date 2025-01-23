@@ -1,0 +1,16 @@
+<div class="bg-white p-6 rounded-lg shadow-md">
+  <h3 class="text-lg font-semibold mb-4">Card Details</h3>
+  <div id="card-element" #cardElement class="mb-4 border rounded p-2">
+    <!-- Stripe Element will be mounted here -->
+  </div>
+  <div id="card-errors" role="alert" class="text-red-500 text-sm mb-4"></div>
+
+  <button
+    (click)="onPaymentSubmit()"
+    class="bg-primary hover:bg-primary-700 text-white font-bold py-2 px-4 rounded"
+    [disabled]="stripeLoading"
+  >
+    Pay with Card
+    <span *ngIf="stripeLoading" class="inline-block ml-2">Initializing...</span>
+  </button>
+</div>

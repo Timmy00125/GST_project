@@ -1,0 +1,113 @@
+<form [formGroup]="formGroup">
+  <div class="mb-4">
+    <label for="name" class="block text-gray-700 text-sm font-bold mb-2"
+      >Full Name</label
+    >
+    <input
+      type="text"
+      id="name"
+      formControlName="name"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    />
+    <div
+      *ngIf="
+        formGroup.get('name')?.invalid &&
+        (formGroup.get('name')?.dirty || formGroup.get('name')?.touched)
+      "
+      class="text-red-500 text-xs italic"
+    >
+      <div *ngIf="formGroup.get('name')?.errors?.['required']">
+        Name is required.
+      </div>
+    </div>
+  </div>
+  <div class="mb-4">
+    <label for="address" class="block text-gray-700 text-sm font-bold mb-2"
+      >Address</label
+    >
+    <textarea
+      id="address"
+      formControlName="address"
+      rows="3"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    ></textarea>
+    <div
+      *ngIf="
+        formGroup.get('address')?.invalid &&
+        (formGroup.get('address')?.dirty || formGroup.get('address')?.touched)
+      "
+      class="text-red-500 text-xs italic"
+    >
+      <div *ngIf="formGroup.get('address')?.errors?.['required']">
+        Address is required.
+      </div>
+    </div>
+  </div>
+  <div class="mb-4">
+    <label for="city" class="block text-gray-700 text-sm font-bold mb-2"
+      >City</label
+    >
+    <input
+      type="text"
+      id="city"
+      formControlName="city"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    />
+    <div
+      *ngIf="
+        formGroup.get('city')?.invalid &&
+        (formGroup.get('city')?.dirty || formGroup.get('city')?.touched)
+      "
+      class="text-red-500 text-xs italic"
+    >
+      <div *ngIf="formGroup.get('city')?.errors?.['required']">
+        City is required.
+      </div>
+    </div>
+  </div>
+  <div class="mb-4">
+    <label for="postalCode" class="block text-gray-700 text-sm font-bold mb-2"
+      >Postal Code</label
+    >
+    <input
+      type="text"
+      id="postalCode"
+      formControlName="postalCode"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    />
+    <div
+      *ngIf="
+        formGroup.get('postalCode')?.invalid &&
+        (formGroup.get('postalCode')?.dirty ||
+          formGroup.get('postalCode')?.touched)
+      "
+      class="text-red-500 text-xs italic"
+    >
+      <div *ngIf="formGroup.get('postalCode')?.errors?.['required']">
+        Postal Code is required.
+      </div>
+    </div>
+  </div>
+  <div class="mb-4">
+    <label for="country" class="block text-gray-700 text-sm font-bold mb-2"
+      >Country</label
+    >
+    <input
+      type="text"
+      id="country"
+      formControlName="country"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    />
+    <div
+      *ngIf="
+        formGroup.get('country')?.invalid &&
+        (formGroup.get('country')?.dirty || formGroup.get('country')?.touched)
+      "
+      class="text-red-500 text-xs italic"
+    >
+      <div *ngIf="formGroup.get('country')?.errors?.['required']">
+        Country is required.
+      </div>
+    </div>
+  </div>
+</form>

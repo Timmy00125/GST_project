@@ -1,0 +1,72 @@
+<div class="container mx-auto mt-8">
+  <h2 class="text-2xl font-bold mb-4">Checkout</h2>
+
+  <div *ngIf="cartSignals.getCartItemCount() === 0" class="text-gray-600">
+    Your cart is empty. Please add items before proceeding to checkout.
+    <a routerLink="/products" class="text-primary hover:text-primary-700"
+      >Continue shopping</a
+    >.
+  </div>
+
+  <div *ngIf="cartSignals.getCartItemCount() > 0">
+    <div class="mb-6">
+      <p class="text-lg font-semibold">Cart Summary</p>
+      <ul class="divide-y divide-gray-200">
+        <li
+          *ngFor="let item of cartSignals.cartItems()"
+          class="py-2 flex justify-between"
+        >
+          <span>{{ item.productName }} x {{ item.quantity }}</span>
+          <span class="font-semibold">${{ item.price * item.quantity }}</span>
+        </li>
+      </ul>
+      <p class="mt-2 text-xl font-semibold">Total: ${{ cartTotal() }}</p>
+    </div>
+
+    <div *ngIf="checkoutStage === 'address'">
+      <h3 class="text-xl font-semibold mb-4">Shipping Address</h3>
+      <app-address-form [formGroup]="shippingAddressForm"></app-address-form>
+      <div class="mt-4 flex justify-end">
+        <button
+          (click)="nextStage()"
+          class="bg-primary hover:bg-primary-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Continue to Payment
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="checkoutStage === 'payment'">
+      <h3 class="text-xl font-semibold mb-4">Payment Information</h3>
+      <app-payment-form
+        (paymentToken)="onPaymentTokenReceived($event)"
+      ></app-payment-form>
+      <div class="mt-4 flex justify-between">
+        <button
+          (click)="previousStage()"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded"
+        >
+          Back to Address
+        </button>
+        <button
+          (click)="nextStage()"
+          class="bg-primary hover:bg-primary-700 text-white font-bold py-2 px-4 rounded"
+          [disabled]="loading"
+        >
+          Place Order
+          <app-loading-spinner
+            *ngIf="loading"
+            class="inline-block ml-2"
+          ></app-loading-spinner>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="checkoutStage === 'confirmation'">
+      <h3 class="text-xl font-semibold mb-4">Order Confirmation</h3>
+      <p>Please wait while we process your order...</p>
+      <app-loading-spinner class="h-12 w-12"></app-loading-spinner>
+      <!-- Confirmation details will be displayed in confirmation-page component -->
+    </div>
+  </div>
+</div>

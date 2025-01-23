@@ -1,0 +1,54 @@
+<div class="bg-white p-4 rounded-lg shadow-md">
+  <h4 class="text-lg font-semibold mb-2">Filters</h4>
+
+  <div class="mb-4">
+    <label class="block text-gray-700 text-sm font-bold mb-2">Category</label>
+    <select
+      [(ngModel)]="selectedCategoryId"
+      (change)="onCategoryFilterChange()"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    >
+      <option [value]="null">All Categories</option>
+      <option *ngFor="let category of categories" [value]="category.id">
+        {{ category.name }}
+      </option>
+    </select>
+  </div>
+
+  <div class="mb-4">
+    <label class="block text-gray-700 text-sm font-bold mb-2"
+      >Price Range</label
+    >
+    <div class="flex space-x-2">
+      <input
+        type="number"
+        placeholder="Min Price"
+        [(ngModel)]="minPriceInput"
+        (change)="onPriceRangeFilterChange()"
+        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+      <input
+        type="number"
+        placeholder="Max Price"
+        [(ngModel)]="maxPriceInput"
+        (change)="onPriceRangeFilterChange()"
+        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <label class="block text-gray-700 text-sm font-bold mb-2">Sort By</label>
+    <select
+      [(ngModel)]="sortOptionInput"
+      (change)="onSortChange()"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    >
+      <option value="">Default</option>
+      <option value="price">Price: Low to High</option>
+      <option value="-price">Price: High to Low</option>
+      <option value="created_at">Date: Newest</option>
+      <option value="-created_at">Date: Oldest</option>
+    </select>
+  </div>
+</div>

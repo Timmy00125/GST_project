@@ -1,0 +1,20 @@
+<nav class="bg-gray-800 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <a routerLink="/" class="text-white font-bold text-xl">E-Commerce</a>
+      <div class="flex items-center space-x-4">
+        <a routerLink="/products" class="text-gray-300 hover:text-white">Products</a>
+        <a routerLink="/cart" class="text-gray-300 hover:text-white relative">
+          Cart
+          <span *ngIf="cartItemCount() > 0" class="absolute top-[-8px] right-[-8px] bg-primary text-white text-xs rounded-full px-2 py-0.5">{{ cartItemCount() }}</span>
+        </a>
+        <ng-container *ngIf="!authService.isAuthenticated(); else authenticated">
+          <a routerLink="/auth/login" class="text-gray-300 hover:text-white">Login</a>
+          <a routerLink="/auth/register" class="text-gray-300 hover:text-white">Register</a>
+        </ng-container>
+        <ng-template #authenticated>
+          <a routerLink="/profile" class="text-gray-300 hover:text-white">Profile</a>
+          <button (click)="logout()" class="text-gray-300 hover:text-white">Logout</button>
+        </ng-template>
+      </div>
+    </div>
+  </nav>

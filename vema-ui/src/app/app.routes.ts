@@ -1,6 +1,17 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guard/auth.guard';
-import { AuthService } from './services/auth.service';
-import { LoginComponent } from './components/login/login.component';
+import { HomeComponent } from '../home/home/home.component';
+import { authRoutes } from '../auth/auth.routes';
+import { productRoutes } from '../product/product.routes';
+import { checkoutRoutes } from '../checkout/checkout.routes';
+import { profileRoutes } from '../profile/profile.routes';
+import { CartPageComponent } from '../cart/components/cart-page/cart-page.component';
 
-export const routes: Routes = [];
+export const appRoutes: Routes = [
+  { path: '', component: HomeComponent, title: 'Home' },
+  { path: 'products', children: productRoutes },
+  { path: 'cart', component: CartPageComponent, title: 'Shopping Cart' },
+  { path: 'checkout', children: checkoutRoutes },
+  { path: 'auth', children: authRoutes },
+  { path: 'profile', children: profileRoutes },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
+];

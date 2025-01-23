@@ -1,0 +1,86 @@
+<div class="container mx-auto mt-8 max-w-md">
+  <h2 class="text-2xl font-bold mb-4">Edit Profile</h2>
+
+  <div *ngIf="loading" class="h-64">
+    <app-loading-spinner class="h-full"></app-loading-spinner>
+  </div>
+
+  <div *ngIf="!loading && profileForm">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+        <div class="mb-4">
+          <label for="name" class="block text-gray-700 text-sm font-bold mb-2"
+            >Name</label
+          >
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+          <div
+            *ngIf="
+              profileForm.get('name')?.invalid &&
+              (profileForm.get('name')?.dirty ||
+                profileForm.get('name')?.touched)
+            "
+            class="text-red-500 text-xs italic"
+          >
+            <div *ngIf="profileForm.get('name')?.errors?.['required']">
+              Name is required.
+            </div>
+          </div>
+        </div>
+        <div class="mb-6">
+          <label
+            for="address"
+            class="block text-gray-700 text-sm font-bold mb-2"
+            >Address</label
+          >
+          <textarea
+            id="address"
+            formControlName="address"
+            rows="3"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          ></textarea>
+          <div
+            *ngIf="
+              profileForm.get('address')?.invalid &&
+              (profileForm.get('address')?.dirty ||
+                profileForm.get('address')?.touched)
+            "
+            class="text-red-500 text-xs italic"
+          >
+            <div *ngIf="profileForm.get('address')?.errors?.['required']">
+              Address is required.
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <button
+            type="submit"
+            class="bg-primary hover:bg-primary-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            [disabled]="loading"
+          >
+            Save Changes
+            <app-loading-spinner
+              *ngIf="loading"
+              class="inline-block ml-2"
+            ></app-loading-spinner>
+          </button>
+          <a
+            routerLink="/profile"
+            class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800"
+          >
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !profileForm" class="text-gray-600">
+    Failed to load profile edit form. Please try again later.
+  </div>
+</div>
