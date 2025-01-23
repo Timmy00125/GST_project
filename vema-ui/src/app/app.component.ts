@@ -28,7 +28,6 @@ import { SharedModule } from '../shared/shared.module';
 })
 export class AppComponent implements OnInit {
   title = 'ecommerce-frontend';
-
   constructor(private notificationService: NotificationService) {} // Inject NotificationService
 
   ngOnInit(): void {
