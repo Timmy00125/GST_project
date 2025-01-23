@@ -5,7 +5,11 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from '@angular/common/http';
 import { JwtInterceptor } from '../auth/auth.interceptor';
 import {
   BrowserModule,
@@ -21,7 +25,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
-    provideHttpClient(withInterceptors([JwtInterceptor])),
+    provideHttpClient(withInterceptors([JwtInterceptor]), withFetch()),
     provideClientHydration(),
     provideAnimations(),
     provideToastr({

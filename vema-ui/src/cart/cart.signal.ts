@@ -1,22 +1,23 @@
-import { effect, Injectable, signal } from '@angular/core';
+import { effect, Injectable, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 
 export interface CartItem {
   productId: number;
   quantity: number;
-  price: number; // Price at time of adding to cart
-  productName: string; // Product name for display
-  productImage?: string; // Product image URL
+  price: number;
+  productName: string;
+  productImage?: string;
 }
+
 @Injectable({ providedIn: 'root' })
 export class CartSignals {
-  cartItems = signal<CartItem[]>(this.loadCartItems()); // Initialize from localStorage or cookies
+  private platformId = inject(PLATFORM_ID);
+  cartItems = signal<CartItem[]>(this.loadCartItems());
 
   constructor() {
-    // this.cartItems.subscribe((items) => {
-    //   this.saveCartItems(items); // Save to localStorage or cookies on changes
-    // });
     effect(() => {
-      this.saveCartItems(this.cartItems()); // using effect instead of subscribe
+      this.saveCartItems(this.cartItems());
     });
   }
 
@@ -27,7 +28,6 @@ export class CartSignals {
     );
 
     if (existingItemIndex > -1) {
-      // Update quantity if item already exists
       const updatedItems = currentItems.map((currentItem, index) =>
         index === existingItemIndex
           ? { ...currentItem, quantity: currentItem.quantity + item.quantity }
@@ -35,7 +35,6 @@ export class CartSignals {
       );
       this.cartItems.set(updatedItems);
     } else {
-      // Add new item
       this.cartItems.update((items) => [...items, item]);
     }
   }
@@ -74,11 +73,16 @@ export class CartSignals {
   }
 
   private saveCartItems(items: CartItem[]): void {
-    localStorage.setItem('cartItems', JSON.stringify(items)); // Or use cookies
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('cartItems', JSON.stringify(items));
+    }
   }
 
   private loadCartItems(): CartItem[] {
-    const storedCart = localStorage.getItem('cartItems'); // Or load from cookies
-    return storedCart ? JSON.parse(storedCart) : [];
+    if (isPlatformBrowser(this.platformId)) {
+      const storedCart = localStorage.getItem('cartItems');
+      return storedCart ? JSON.parse(storedCart) : [];
+    }
+    return [];
   }
 }
