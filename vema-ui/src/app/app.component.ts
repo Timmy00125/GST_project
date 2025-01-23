@@ -34,5 +34,6 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Example of using NotificationService - can be removed or used elsewhere
     // this.notificationService.success('Welcome to our e-commerce platform!');
+    //this is a test
   }
 }
