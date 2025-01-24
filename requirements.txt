@@ -11,3 +11,4 @@ stripe==7.11.0
 psycopg2-binary==2.9.9
 dj-rest-auth==5.0.2
 python-magic==0.4.27
+Markdown == 3.7

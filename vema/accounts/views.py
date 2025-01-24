@@ -14,21 +14,39 @@ from .serializers import (
     UserProfileUpdateSerializer,
 )
 from .permissions import IsAdminUserOrReadOnly  # Example custom permission
-from ..core.utils import send_verification_email, generate_otp, send_otp_email
 from django.utils import timezone
-from datetime import timedelta
-from ..core.utils import send_password_reset_email  # Implement in utils.py
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import password_validation
 from .permissions import (
     IsAdminUserOrReadOnly,
 )  # Example custom permission (reuse or adjust)
-from ..orders.models import Order  # Import Order model (defined below)
+from orders.models import Order  # Import Order model (defined below)
 
 # Create your views here.
 
 User = get_user_model()
+
+# backend/accounts/views.py
+
+
+# backend/accounts/views.py
+# from rest_framework import generics, permissions, status
+# from rest_framework.response import Response
+# from rest_framework_simplejwt.views import TokenObtainPairView
+# from django.contrib.auth import get_user_model
+# from .serializers import (
+#     UserRegistrationSerializer,
+#     CustomTokenObtainPairSerializer,
+#     UserProfileDetailSerializer,
+#     UserProfileUpdateSerializer,
+# )
+# from .permissions import IsAdminUserOrReadOnly  # Example custom permission
+
+# # Removed email utils import:
+# # from ..core.utils import send_verification_email
+
+# User = get_user_model()
 
 
 class UserRegistrationView(generics.CreateAPIView):
@@ -37,9 +55,7 @@ class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]  # Allow unauthenticated access
 
     def perform_create(self, serializer):
-        user = serializer.save()
-        # Generate verification token and send email
-        send_verification_email(self.request, user)  # Implement in utils.py
+        serializer.save()  # No email sending now, user is activated directly in serializer
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -62,93 +78,12 @@ class UserProfileUpdateView(generics.UpdateAPIView):
         return self.request.user
 
 
-class VerifyEmailView(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
-
-    def get(self, request, token):
-        try:
-            user = User.objects.get(verification_token=token)
-            if not user.email_verified:
-                user.email_verified = True
-                user.verification_token = None
-                user.is_active = True  # Activate user
-                user.save()
-                return Response(
-                    {"message": "Email verified successfully!"},
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {"message": "Email already verified."}, status=status.HTTP_200_OK
-                )
-        except User.DoesNotExist:
-            return Response(
-                {"error": "Invalid verification token."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-
-class RequestOTPView(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        email = request.data.get("email")
-        if not email:
-            return Response(
-                {"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
-            user = User.objects.get(email=email)
-            otp = generate_otp()  # Implement in utils.py
-            user.otp = otp
-            user.otp_expiry = timezone.now() + timedelta(
-                minutes=10
-            )  # OTP valid for 10 mins
-            user.save()
-            send_otp_email(email, otp)  # Implement in utils.py
-            return Response(
-                {"message": "OTP sent to email."}, status=status.HTTP_200_OK
-            )
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User with this email not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-
-class VerifyOTPView(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        email = request.data.get("email")
-        otp = request.data.get("otp")
-        if not email or not otp:
-            return Response(
-                {"error": "Email and OTP are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        try:
-            user = User.objects.get(email=email)
-            if user.otp == otp and user.otp_expiry > timezone.now():
-                user.email_verified = True
-                user.otp = None
-                user.otp_expiry = None
-                user.is_active = True  # Activate user
-                user.save()
-                return Response(
-                    {"message": "Email verified successfully!"},
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {"error": "Invalid OTP or OTP expired."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User with this email not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+# Removed VerifyEmailView entirely:
+# class VerifyEmailView(generics.GenericAPIView):
+#     permission_classes = [permissions.AllowAny]
+#
+#     def get(self, request, token):
+#         # ... (Email verification logic removed) ...
 
 
 class LogoutView(generics.GenericAPIView):

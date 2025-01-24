@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { environment } from '../../environments/environments.developments';
+import { environment } from '../../environments/environments';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { NOT_RETRY_AUTH_REQUEST } from '../auth.interceptor';

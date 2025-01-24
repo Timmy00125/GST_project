@@ -8,10 +8,21 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 
-from vema.accounts.models import UserProfile
-from vema.orders.models import Order
+from orders.models import Order
+
+# backend/accounts/serializers.py
+# from rest_framework import serializers
+# from django.contrib.auth import get_user_model
+from .models import UserProfile  # Import UserProfile model
 
 User = get_user_model()
+
+
+# backend/accounts/serializers.py
+# from rest_framework import serializers
+from django.contrib.auth import get_user_model
+
+# from .models import UserProfile  # Import UserProfile model
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -28,7 +39,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "email", "password", "profile"]
+        fields = [
+            "username",
+            "email",
+            "password",
+            "profile",
+        ]  # Keeping email field, but not used for verification anymore
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
@@ -36,13 +52,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         password = validated_data.pop("password")
         user = User(**validated_data)
         user.set_password(password)
-        user.is_active = False  # Initially inactive until email verification
+        user.is_active = True  # **Activate user immediately upon registration**
         user.save()
 
-        profile = UserProfile.objects.create(
-            user=user, **profile_data
-        )  # Create profile
-        # Send email verification here (using utils.py - see below)
+        profile = UserProfile.objects.create(user=user, **profile_data)
         return user
 
 

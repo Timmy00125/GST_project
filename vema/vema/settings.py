@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-h4q8akrc@sjnn@#y7u_0tc-^0=f_+jw71jp3rr@n@onb!fo&+$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 AUTH_USER_MODEL = "accounts.User"
 
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     # "allauth.socialaccount",
     "accounts",
     "products",
-    "core",
+    # "core",
     "reviews",
     "orders",
     "admin_dashboard",
