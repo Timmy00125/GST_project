@@ -28,14 +28,17 @@ export class LoginComponent {
   loading = false;
 
   loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    // **Use "username" instead of "email" in login form:**
+    username: ['', Validators.required], // Form control for username
     password: ['', Validators.required],
   });
 
   login(): void {
     if (this.loginForm.valid) {
       this.loading = true;
+      // **Send "username" and "password" directly from loginForm.value:**
       this.authService.login(this.loginForm.value).subscribe({
+        // Directly send loginForm.value (now contains username and password)
         next: () => {
           this.loading = false;
           this.notificationService.success('Login successful!');
@@ -48,6 +51,7 @@ export class LoginComponent {
               'Login failed. Please check your credentials.',
             'Login Error'
           );
+          console.error('Login error:', error); // Log error for debugging
         },
       });
     } else {

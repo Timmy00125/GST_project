@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -52,13 +53,25 @@ INSTALLED_APPS = [
     "admin_dashboard",
 ]
 
+# MIDDLEWARE = [
+#     "corsheaders.middleware.CorsMiddleware",
+#     "django.middleware.security.SecurityMiddleware",
+#     "django.contrib.sessions.middleware.SessionMiddleware",
+#     "django.middleware.common.CommonMiddleware",
+#     "django.middleware.csrf.CsrfViewMiddleware",
+#     "django.contrib.auth.middleware.AuthenticationMiddleware",
+#     "django.contrib.messages.middleware.MessageMiddleware",
+#     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+#     "allauth.account.middleware.AccountMiddleware",
+# ]
+
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # CORS Middleware **FIRST**
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",  # Authentication Middleware
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -98,6 +111,30 @@ AUTHENTICATION_BACKENDS = [
     # `allauth` specific authentication methods, such as login by email
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
+
+# backend/ecommerce_api/settings.py
+
+# ... (rest of your settings.py) ...
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("Bearer",),  # Ensure 'Bearer' is the header type
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),  # Adjust as needed
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),  # Adjust as needed
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_COOKIE": "access_token",  # Cookie name for access token
+    "AUTH_COOKIE_REFRESH": "refresh_token",  # Cookie name for refresh token
+    "AUTH_COOKIE_PATH": "/",  # Cookie path
+    "AUTH_COOKIE_SECURE": False,  # Set to True in production (HTTPS)
+    "AUTH_COOKIE_HTTP_ONLY": True,  # HttpOnly cookie for security
+    "AUTH_COOKIE_SAMESITE": "Strict",  # SameSite cookie attribute
+}
 
 
 # Database

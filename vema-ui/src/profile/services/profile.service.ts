@@ -1,17 +1,8 @@
-// import { Injectable } from '@angular/core';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class ProfileService {
-
-//   constructor() { }
-// }
-
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http'; // **Import HttpHeaders**
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environments';
+import { AuthService } from '../../auth/services/auth.service'; // **Import AuthService**
 
 @Injectable({
   providedIn: 'root',
@@ -19,10 +10,21 @@ import { environment } from '../../environments/environments';
 export class ProfileService {
   private apiUrl = environment.apiBaseUrl + '/accounts';
   http = inject(HttpClient);
+  authService = inject(AuthService); // **Inject AuthService**
 
   getUserProfile(): Observable<any> {
-    // Replace 'any' with your UserProfile interface
-    return this.http.get<any>(`${this.apiUrl}/profile/`);
+    const accessToken = this.authService.getAccessToken(); // **Get access token**
+    if (!accessToken) {
+      console.warn('No access token available. User might not be logged in.');
+      return new Observable<any>(); // Or handle no token case appropriately
+    }
+
+    const headers = new HttpHeaders({
+      // **Create HttpHeaders**
+      Authorization: `Bearer ${accessToken}`, // **Set Authorization header**
+    });
+
+    return this.http.get<any>(`${this.apiUrl}/profile/`, { headers }); // **Pass headers in request**
   }
 
   updateUserProfile(profileData: any): Observable<any> {
@@ -30,7 +32,6 @@ export class ProfileService {
   }
 
   getOrderHistory(): Observable<any[]> {
-    // Replace 'any[]' with your Order interface array
     return this.http.get<any[]>(`${environment.apiBaseUrl}/orders/orders/`); // Adjust endpoint if needed
   }
 }
