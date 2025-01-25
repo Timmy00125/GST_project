@@ -12,26 +12,7 @@ import { CartSignals, CartItem } from '../../../cart/cart.signal';
 import { NotificationService } from '../../../core/services/notification.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { FormsModule } from '@angular/forms';
-interface ProductImage {
-  image: string;
-  alt_text: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Product {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  category: Category;
-  stock: number;
-  images: ProductImage[];
-  created_at: string;
-}
+import { Product, Category, ProductImage } from '../../models/product.models';
 
 @Component({
   selector: 'app-product-details',

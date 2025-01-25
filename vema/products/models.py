@@ -1,14 +1,12 @@
-from django.db import models
-
-# Create your models here.
+# backend/products/models.py
 from django.db import models
 from django.utils import timezone
+from django.conf import settings  # Import settings
 
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
-    # Add slug for better URLs if needed
     def __str__(self):
         return self.name
 
@@ -25,18 +23,22 @@ class Product(models.Model):
         "ProductImage", related_name="products", blank=True
     )  # Multiple images
     created_at = models.DateTimeField(default=timezone.now)
+    # **Add created_by field (ForeignKey to User):**
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_products",
+    )
 
     def __str__(self):
         return self.title
 
 
 class ProductImage(models.Model):
-    image = models.ImageField(
-        upload_to="products/"
-    )  # Configure MEDIA_ROOT and MEDIA_URL in settings
-    alt_text = models.CharField(
-        max_length=255, blank=True
-    )  # Alt text for accessibility
+    image = models.ImageField(upload_to="products/")
+    alt_text = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f"Image for Product ID: {self.id}"

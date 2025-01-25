@@ -8,11 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface Category {
-  id: number;
-  name: string;
-}
+import { Category } from '../../models/product.models';
 
 @Component({
   selector: 'app-product-filters',

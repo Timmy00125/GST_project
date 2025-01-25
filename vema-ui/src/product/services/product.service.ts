@@ -1,21 +1,18 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environments.developments';
-
-interface ProductPage {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: any[]; // Replace 'any' with your Product interface
-}
+import { Product, Category, ProductPage } from '../models/product.models';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
   private apiUrl = environment.apiBaseUrl + '/products';
+  private categoriesApiUrl = environment.apiBaseUrl + '/categories';
   http = inject(HttpClient);
+  authService = inject(AuthService);
 
   getProducts(
     page: number = 1,
@@ -54,8 +51,24 @@ export class ProductService {
     return this.http.get<any>(`${this.apiUrl}/products/${productId}/`);
   }
 
-  getCategories(): Observable<any[]> {
+  getCategories(): Observable<Category[]> {
     // Replace 'any[]' with your Category interface array
-    return this.http.get<any[]>(`${environment.apiBaseUrl}/categories/`); // Adjust URL if needed
+    return this.http.get<Category[]>(`${environment.apiBaseUrl}/`); // Adjust URL if needed
+  }
+
+  createProduct(productData: FormData): Observable<Product> {
+    const accessToken = this.authService.getAccessToken();
+    if (!accessToken) {
+      console.warn('No access token available. User not logged in.');
+      return new Observable<Product>();
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${accessToken}`,
+    });
+
+    return this.http.post<Product>(`${this.apiUrl}/create/`, productData, {
+      headers,
+    });
   }
 }

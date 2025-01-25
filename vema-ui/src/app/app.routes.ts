@@ -5,6 +5,8 @@ import { productRoutes } from '../product/product.routes';
 import { checkoutRoutes } from '../checkout/checkout.routes';
 import { profileRoutes } from '../profile/profile.routes';
 import { CartPageComponent } from '../cart/components/cart-page/cart-page.component';
+// import { CreateProductComponent } from '../product/components/create-product/create-product.component';
+// import { AuthGuard } from '../auth/guards/auth.guard';
 
 export const appRoutes: Routes = [
   { path: '', component: HomeComponent, title: 'Home' },
@@ -14,4 +16,5 @@ export const appRoutes: Routes = [
   { path: 'auth', children: authRoutes },
   { path: 'profile', children: profileRoutes },
   { path: '**', redirectTo: '', pathMatch: 'full' },
+  // { path: '**', redirectTo: '' },
 ];

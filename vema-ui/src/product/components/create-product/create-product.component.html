@@ -1,0 +1,126 @@
+<!-- frontend/ecommerce-app/src/app/products/components/create-product/create-product.component.html -->
+<div class="container mx-auto mt-8">
+  <div class="max-w-lg mx-auto bg-white p-6 rounded-md shadow-md">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+      Create New Product
+    </h2>
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      <div class="mb-4">
+        <label for="title" class="block text-gray-700 text-sm font-bold mb-2"
+          >Title</label
+        >
+        <input
+          type="text"
+          id="title"
+          formControlName="title"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+        <div
+          *ngIf="
+            productForm.get('title')?.invalid &&
+            (productForm.get('title')?.dirty ||
+              productForm.get('title')?.touched)
+          "
+          class="text-red-500 text-xs italic"
+        >
+          <div *ngIf="productForm.get('title')?.errors?.['required']">
+            Title is required.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label
+          for="description"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >Description</label
+        >
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="3"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        ></textarea>
+      </div>
+
+      <div class="mb-4">
+        <label for="price" class="block text-gray-700 text-sm font-bold mb-2"
+          >Price</label
+        >
+        <input
+          type="number"
+          id="price"
+          formControlName="price"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+        <div
+          *ngIf="
+            productForm.get('price')?.invalid &&
+            (productForm.get('price')?.dirty ||
+              productForm.get('price')?.touched)
+          "
+          class="text-red-500 text-xs italic"
+        >
+          <div *ngIf="productForm.get('price')?.errors?.['required']">
+            Price is required.
+          </div>
+          <div *ngIf="productForm.get('price')?.errors?.['min']">
+            Price cannot be negative.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="category" class="block text-gray-700 text-sm font-bold mb-2"
+          >Category</label
+        >
+        <select
+          id="category"
+          formControlName="category"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        >
+          <option value="" disabled>Select a category</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <div
+          *ngIf="
+            productForm.get('category')?.invalid &&
+            (productForm.get('category')?.dirty ||
+              productForm.get('category')?.touched)
+          "
+          class="text-red-500 text-xs italic"
+        >
+          <div *ngIf="productForm.get('category')?.errors?.['required']">
+            Category is required.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="image" class="block text-gray-700 text-sm font-bold mb-2"
+          >Product Image (Optional)</label
+        >
+        <input
+          type="file"
+          id="image"
+          (change)="onFileChange($event)"
+          accept="image/*"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+
+      <div class="flex items-center justify-between">
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          <span *ngIf="!loading">Create Product</span>
+          <span *ngIf="loading">Creating...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

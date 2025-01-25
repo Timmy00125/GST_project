@@ -1,3 +1,4 @@
+# backend/products/serializers.py
 from rest_framework import serializers
 from .models import Product, Category, ProductImage
 
@@ -14,9 +15,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ["id", "image", "alt_text"]
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()  # Nested serializer for category
-    images = ProductImageSerializer(many=True, read_only=True)  # Read-only for listing
+class ProductSerializer(serializers.ModelSerializer):  # For listing/details
+    category = CategorySerializer()
+    images = ProductImageSerializer(many=True, read_only=True)
+    created_by_username = serializers.CharField(
+        source="created_by.username", read_only=True
+    )  # Display creator's username
 
     class Meta:
         model = Product
@@ -29,21 +33,16 @@ class ProductSerializer(serializers.ModelSerializer):
             "stock",
             "images",
             "created_at",
+            "created_by_username",
         ]
-        read_only_fields = [
-            "id",
-            "created_at",
-            "images",
-        ]  # Images handled separately for CRUD
+        read_only_fields = ["id", "created_at", "images", "created_by_username"]
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):  # For product creation
-    category = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all()
-    )  # Allow category selection by ID
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     image_files = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False
-    )  # For image uploads
+    )
 
     class Meta:
         model = Product
@@ -55,28 +54,31 @@ class ProductCreateSerializer(serializers.ModelSerializer):  # For product creat
             "category",
             "stock",
             "image_files",
-        ]
+        ]  # Exclude created_by - auto-set in view
+
+    def validate_price(self, value):  # Example validation - price not negative
+        if value < 0:
+            raise serializers.ValidationError("Price cannot be negative.")
+        return value
 
     def create(self, validated_data):
-        image_files = validated_data.pop("image_files", [])  # Extract image files
+        image_files = validated_data.pop("image_files", [])
         product = Product.objects.create(**validated_data)
         for image_file in image_files:
-            ProductImage.objects.create(
-                product=product, image=image_file
-            )  # Associate images
+            ProductImage.objects.create(product=product, image=image_file)
         return product
 
 
 class ProductUpdateSerializer(serializers.ModelSerializer):  # For product updates
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), required=False
-    )  # Optional category update
+    )
     image_files = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False
-    )  # For new image uploads
+    )
     remove_image_ids = serializers.ListField(
         child=serializers.IntegerField(), write_only=True, required=False
-    )  # For removing existing images
+    )
 
     class Meta:
         model = Product
@@ -96,13 +98,11 @@ class ProductUpdateSerializer(serializers.ModelSerializer):  # For product updat
         image_files = validated_data.pop("image_files", [])
         remove_image_ids = validated_data.pop("remove_image_ids", [])
 
-        instance = super().update(instance, validated_data)  # Update other fields
+        instance = super().update(instance, validated_data)
 
-        # Add new images
         for image_file in image_files:
             ProductImage.objects.create(product=instance, image=image_file)
 
-        # Remove images by ID
         for image_id in remove_image_ids:
             try:
                 image_to_remove = ProductImage.objects.get(
@@ -110,6 +110,6 @@ class ProductUpdateSerializer(serializers.ModelSerializer):  # For product updat
                 )
                 image_to_remove.delete()
             except ProductImage.DoesNotExist:
-                pass  # Handle case where image doesn't exist or not associated
+                pass
 
         return instance

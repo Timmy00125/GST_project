@@ -3,27 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CartSignals, CartItem } from '../../../cart/cart.signal';
 import { RouterModule } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
-
-interface ProductImage {
-  image: string;
-  alt_text: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Product {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  category: Category;
-  stock: number;
-  images: ProductImage[];
-  created_at: string;
-}
+import { Product, Category, ProductImage } from '../../models/product.models';
 
 @Component({
   selector: 'app-product-card',

@@ -1,11 +1,11 @@
 # products/filters.py
 import django_filters
 
+# from orders import models
+
 # from vema.accounts import models
 from .models import Product, Category
-from ..reviews.models import Review  # Import Review model
-
-# from ..reviews.models import models
+from reviews.models import Review  # Import Review model
 
 
 class ProductFilter(django_filters.FilterSet):
@@ -18,7 +18,9 @@ class ProductFilter(django_filters.FilterSet):
 
     def filter_by_rating(self, queryset, name, value):
         if value:
-            return queryset.annotate(avg_rating=models.Avg("reviews__rating")).filter(
+            return queryset.annotate(
+                avg_rating=Review.Avg("reviews__rating")
+            ).filter(  # changed model here to review
                 avg_rating__gte=value
             )
         return queryset
