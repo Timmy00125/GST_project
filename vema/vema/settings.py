@@ -124,7 +124,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),  # Ensure 'Bearer' is the header type
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),  # Adjust as needed
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=3),  # Adjust as needed
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),  # Adjust as needed
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,

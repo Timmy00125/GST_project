@@ -40,8 +40,9 @@ class ProductSerializer(serializers.ModelSerializer):  # For listing/details
 
 class ProductCreateSerializer(serializers.ModelSerializer):  # For product creation
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
-    image_files = serializers.ListField(
-        child=serializers.ImageField(), write_only=True, required=False
+    # Change from ListField(ImageField) to ListField(URLField)
+    image_urls = serializers.ListField(
+        child=serializers.URLField(), write_only=True, required=False
     )
 
     class Meta:
@@ -53,7 +54,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):  # For product creat
             "price",
             "category",
             "stock",
-            "image_files",
+            "image_urls",
         ]  # Exclude created_by - auto-set in view
 
     def validate_price(self, value):  # Example validation - price not negative
@@ -62,10 +63,10 @@ class ProductCreateSerializer(serializers.ModelSerializer):  # For product creat
         return value
 
     def create(self, validated_data):
-        image_files = validated_data.pop("image_files", [])
+        image_urls = validated_data.pop("image_urls", [])
         product = Product.objects.create(**validated_data)
-        for image_file in image_files:
-            ProductImage.objects.create(product=product, image=image_file)
+        for url in image_urls:
+            ProductImage.objects.create(product=product, image=url)
         return product
 
 

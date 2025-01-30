@@ -37,7 +37,8 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
-    image = models.ImageField(upload_to="products/")
+    # Change from ImageField to URLField
+    image = models.URLField(max_length=500)  # increased max_length for long URLs
     alt_text = models.CharField(max_length=255, blank=True)
 
     def __str__(self):

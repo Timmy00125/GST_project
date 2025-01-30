@@ -1,9 +1,9 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CartSignals, CartItem } from '../../../cart/cart.signal';
 import { RouterModule } from '@angular/router';
+import { CartSignals, CartItem } from '../../../cart/cart.signal';
 import { NotificationService } from '../../../core/services/notification.service';
-import { Product, Category, ProductImage } from '../../models/product.models';
+import { Product } from '../../models/product.models';
 
 @Component({
   selector: 'app-product-card',
@@ -23,7 +23,7 @@ export class ProductCardComponent {
       quantity: 1,
       price: product.price,
       productName: product.title,
-      productImage: product.images[0]?.image, // Use first image as thumbnail
+      productImage: product.images[0]?.image,
     };
     this.cartSignals.addToCart(cartItem);
     this.notificationService.success(`${product.title} added to cart!`);

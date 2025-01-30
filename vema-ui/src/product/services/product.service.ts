@@ -10,7 +10,7 @@ import { AuthService } from '../../auth/services/auth.service';
 })
 export class ProductService {
   private apiUrl = environment.apiBaseUrl + '/products';
-  private categoriesApiUrl = environment.apiBaseUrl + '/categories';
+  // private categoriesApiUrl = environment.apiBaseUrl + '/categories';
   http = inject(HttpClient);
   authService = inject(AuthService);
 
@@ -42,8 +42,10 @@ export class ProductService {
     if (sortBy) {
       params = params.set('ordering', sortBy);
     }
-
-    return this.http.get<ProductPage>(`${this.apiUrl}/products/`, { params });
+    console.log('before product');
+    return this.http.get<ProductPage>(`${environment.apiBaseUrl}/products/`, {
+      params,
+    });
   }
 
   getProductDetails(productId: number): Observable<any> {
@@ -53,22 +55,6 @@ export class ProductService {
 
   getCategories(): Observable<Category[]> {
     // Replace 'any[]' with your Category interface array
-    return this.http.get<Category[]>(`${environment.apiBaseUrl}/`); // Adjust URL if needed
-  }
-
-  createProduct(productData: FormData): Observable<Product> {
-    const accessToken = this.authService.getAccessToken();
-    if (!accessToken) {
-      console.warn('No access token available. User not logged in.');
-      return new Observable<Product>();
-    }
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${accessToken}`,
-    });
-
-    return this.http.post<Product>(`${this.apiUrl}/create/`, productData, {
-      headers,
-    });
+    return this.http.get<Category[]>(`${environment.apiBaseUrl}/categories/`); // Adjust URL if needed
   }
 }

@@ -1,0 +1,107 @@
+# Install required libraries
+!pip install tensorflow pandas numpy scikit-learn
+
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+from sklearn.preprocessing import StandardScaler, MultiLabelBinarizer
+from sklearn.model_selection import train_test_split
+
+# Load datasets
+patients = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/AI_ML/Population_health/dataset/patients.csv')
+conditions = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/AI_ML/Population_health/dataset/conditions.csv')
+observations = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/AI_ML/Population_health/dataset/observations.csv')
+
+
+
+# Preprocess data
+# ---------------------------------------------------------------
+# Extract age from BIRTHDATE
+patients['age'] = (pd.to_datetime('today') - pd.to_datetime(patients['BIRTHDATE'])).dt.days // 365
+
+# Extract BMI data
+bmi_data = observations[observations['DESCRIPTION'] == 'Body Mass Index'][['PATIENT', 'VALUE']]
+bmi_data = bmi_data.rename(columns={'VALUE': 'bmi'})
+
+# Merge datasets: patients, conditions, and BMI
+df = pd.merge(patients, conditions, left_on='Id', right_on='PATIENT', how='left')
+df = pd.merge(df, bmi_data, left_on='Id', right_on='PATIENT', how='left')
+
+# Drop duplicates and missing values
+df = df.dropna(subset=['bmi', 'age'])
+df = df[['Id', 'age', 'bmi', 'GENDER', 'DESCRIPTION']].drop_duplicates()
+
+# Handle missing condition descriptions
+df['DESCRIPTION'] = df['DESCRIPTION'].fillna('Unknown')
+
+# Group conditions by patient ID for multi-label encoding
+patient_conditions = df.groupby('Id')['DESCRIPTION'].apply(list).reset_index()
+
+# Multi-label binarize condition descriptions
+all_conditions = df['DESCRIPTION'].unique().tolist()
+mlb = MultiLabelBinarizer(classes=all_conditions)
+labels = mlb.fit_transform(patient_conditions['DESCRIPTION'])
+
+# Encode patient features
+df_features = df[['Id', 'age', 'bmi', 'GENDER']].drop_duplicates()
+df_features['GENDER'] = df_features['GENDER'].map({'M': 0, 'F': 1})  # Encode gender as binary
+
+
+# Align features and labels
+common_ids = set(df_features['Id']).intersection(set(patient_conditions['Id']))
+print(f"Number of common IDs: {len(common_ids)}")
+print(f"Features count: {len(df_features)}, Labels count: {len(patient_conditions)}")
+
+# Debugging: Check the mismatched IDs
+feature_ids = set(df_features['Id'])
+label_ids = set(patient_conditions['Id'])
+missing_in_features = label_ids - feature_ids
+missing_in_labels = feature_ids - label_ids
+
+print(f"IDs missing in features: {len(missing_in_features)}")
+print(f"IDs missing in labels: {len(missing_in_labels)}")
+
+# Drop duplicates and keep only common IDs
+df_features = df_features[df_features['Id'].isin(common_ids)].drop_duplicates(subset='Id').sort_values(by='Id').reset_index(drop=True)
+patient_conditions = patient_conditions[patient_conditions['Id'].isin(common_ids)].drop_duplicates(subset='Id').sort_values(by='Id').reset_index(drop=True)
+
+# Ensure alignment of features and labels
+assert len(df_features) == len(patient_conditions), "Features and labels are not aligned after filtering!"
+assert all(df_features['Id'] == patient_conditions['Id']), "Patient IDs are not aligned after filtering!"
+
+# Scale features
+scaler = StandardScaler()
+features = scaler.fit_transform(df_features[['age', 'bmi', 'GENDER']])
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(
+    features, labels, test_size=0.2, random_state=42
+)
+
+
+# Build TensorFlow model
+# ---------------------------------------------------------------
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
+    tf.keras.layers.Dropout(0.3),
+    tf.keras.layers.Dense(32, activation='relu'),
+    tf.keras.layers.Dense(len(all_conditions), activation='sigmoid')  # Multi-label output
+])
+
+
+
+model.compile(
+    optimizer='adam',
+    loss='binary_crossentropy',
+    metrics=['accuracy', tf.keras.metrics.AUC()]
+)
+
+
+# Train model
+history = model.fit(
+    X_train, y_train,
+    epochs=50,
+    batch_size=32,
+    validation_split=0.2,
+    callbacks=[tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)]
+)
