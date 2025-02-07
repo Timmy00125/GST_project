@@ -13,6 +13,7 @@ import { NotificationService } from '../../../core/services/notification.service
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
+  featuredProduct?: Product;
   private Cartsignal = inject(CartSignals);
   private notificationService = inject(NotificationService);
 
@@ -21,7 +22,18 @@ export class ProductListComponent implements OnInit {
   ngOnInit(): void {
     this.productService.getProducts().subscribe((response) => {
       this.products = response.results;
+      this.selectFeaturedProduct();
     });
+  }
+
+  private selectFeaturedProduct(): void {
+    if (this.products.length > 0) {
+      const randomIndex = Math.floor(Math.random() * this.products.length);
+      this.featuredProduct = this.products[randomIndex];
+      this.products = this.products.filter(
+        (p) => p.id !== this.featuredProduct?.id
+      );
+    }
   }
 
   addToCart(product: Product): void {
