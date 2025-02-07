@@ -9,7 +9,7 @@ from .serializers import (
     ProductSerializer,
     CategorySerializer,
     ProductCreateSerializer,
-    ProductUpdateSerializer,
+    ProductUpdateSerializer
 )
 from .filters import ProductFilter
 from accounts.permissions import IsAdminUserOrReadOnly  # Reuse existing permissions
